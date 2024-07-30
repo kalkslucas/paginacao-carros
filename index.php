@@ -1,14 +1,23 @@
 <?php
 require_once 'conexao.php';
+$sqlQtdVeiculos = "SELECT COUNT(*) AS QTDVEICULOS FROM modelos";
+$sqlQtdVeiculosExec = $conectar->prepare($sqlQtdVeiculos);
+$sqlQtdVeiculosExec->execute();
+$linhaQtdVeiculos = $sqlQtdVeiculosExec->fetch(PDO::FETCH_ASSOC);
+$qtdVeiculos = $linhaQtdVeiculos['QTDVEICULOS'];
 
-$page = 1;
-$limit = 10;
+$page = $_GET['page'] ? intval($_GET['page']) : 1;
+$limit = 50;
 $offset = ($page - 1) * $limit;
+
+$page_number = ceil($qtdVeiculos/$limit);
+$page_interval = 2;
 
 $sql = "SELECT marcas.nome as marca, modelos.nome as modelo
 FROM modelos 
 INNER JOIN marcas 
 ON modelos.idmarca = marcas.id 
+ORDER BY marca asc
 LIMIT :limite OFFSET :offset";
 $pesquisar = $conectar->prepare($sql);
 $pesquisar->bindParam(":limite", $limit, PDO::PARAM_INT);
@@ -50,6 +59,22 @@ $pesquisar->execute();
       </tr>  
       <?php } ?>
     </table>
+    
+    <p>Página: <?=$page?> | Número de páginas: <?=$page_number?></p>
+
+    <p>
+      <a href="?page=1"> << </a>
+    <?php
+      $first_page = max($page - $page_interval, 1);
+      $last_page = min($page_number, $page + $page_interval);
+      for ($i = $first_page; $i <= $last_page; $i++) {
+        if($i === $page) { ?>
+        [<?=$i?>]
+    <?php } else { ?>
+        <a href="?page=<?=$i?>">[<?=$i?>]</a>
+    <?php } } ?>
+      <a href="?page=<?=$page_number?>"> >> </a>
+    </p>
   </div>
  
 </body>
