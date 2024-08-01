@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^ E_WARNING);
 require_once 'conexao.php';
 $sqlQtdVeiculos = "SELECT COUNT(*) AS QTDVEICULOS FROM modelos";
 $sqlQtdVeiculosExec = $conectar->prepare($sqlQtdVeiculos);
@@ -24,9 +25,6 @@ $pesquisar->bindParam(":limite", $limit, PDO::PARAM_INT);
 $pesquisar->bindParam(":offset", $offset, PDO::PARAM_INT);
 $pesquisar->execute();
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="pt-br">
